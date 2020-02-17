@@ -1,0 +1,87 @@
+ <html>
+   <head>
+     <link rel="stylesheet" href="style.css">
+     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+   </head>
+   <body>
+     <div id="app">
+      <div class="header">
+        <span>Submitted sitemaps</span>
+        <!-- <span v-if="selectedSitemapsCount !== 0">Selected sitemaps: {{ selectedSitemapsCount }} </span> -->
+        <button v-on:click="recrewlSitemap">Recrawl sitemap</button>
+        <button v-on:click="removeSitemap">Remove sitemap</button>
+      </div>
+
+      <div class="filter-panel">
+        <h5>Filters:</h5>
+
+        <input type="text" v-model="urlFilterValue" v-on:click="showUrlFilterForm=true" placeholder="URL or its part">
+        <div id="url-filter-form" v-if="showUrlFilterForm">
+            <ul>
+              <li><label><input type="radio" name="url-filter" value="contains" v-model="urlFilterRadio" checked>Sitemap contains</label></li>
+              <li><label><input type="radio" name="url-filter" value="not-contains" v-model="urlFilterRadio">Sitemap doesn't contain</label></li>
+              <li><label><input type="radio" name="url-filter" value="exact-match" v-model="urlFilterRadio">Exact match</label></li>
+            </ul>
+            <button v-on:click="onReset" type="button">Reset</button>
+            <button v-on:click="onSubmit" type="button">Apply</button>
+        </div>
+        
+
+        <select v-model="typeFilterValue" v-on:change="filterOnType($event)">
+          <option value="all" selected>All types</option>
+          <option value="index">Sitemap index</option>
+        </select>
+
+        <select v-model="filterOnDateBy">
+          <option value="submitted" selected>Submitted</option>
+          <option value="last-check">Last check</option>
+        </select>
+
+        <input type="date" v-model="dateFilterValue" v-on:change="filterOnDate($event)">
+
+        <select v-on:change="filterOnStatus($event)" v-model="statusFilterValue">
+          <option value="all" selected>All sitemaps</option>
+          <option value="success">Success</option>
+          <option value="couldnot-fetch">Couldn't fetch</option>
+          <option value="errors">Errors</option>
+        </select>
+      </div>
+
+      <div class="content">
+        <table class="sitemap-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox"></th>
+              <th>Sitemap ({{ sitemapsCount }})</th>
+              <th>Type</th>
+              <th>Submitted</th>
+              <th>Last check</th>
+              <th>Status</th>
+              <th>URLs</th>
+              <th>Recrawl sitemap</th>
+              <th>Remove sitemap</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(sitemap, index) in sitemaps" v-bind:key="index">
+              <td><input type="checkbox" name="sitemap-checkbox" v-on:click="checkSitemap"></td>
+              <td><a v-bind:href="sitemap.path">{{ getShortSitemapPath(sitemap.path) }}</a></td>
+              <td>{{ setType(sitemap) }}</td>
+              <td>{{ getShortDate(sitemap.lastSubmitted) }}</td>
+              <td>{{ getShortDate(sitemap.lastCheck) }}</td>
+              <td>{{ setStatus(sitemap) }}</td>
+              <td>{{ sitemap.urls }}</td>
+              <td>
+                <button v-on:click="recrewlSitemap">Recrewl</button>
+              </td>
+              <td>
+                <button v-on:click="removeSitemap(index)">Remove</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+     </div>
+     <script src="main.js"></script>
+   </body>
+ </html>
